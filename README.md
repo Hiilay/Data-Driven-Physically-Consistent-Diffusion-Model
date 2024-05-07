@@ -8,6 +8,7 @@ The test data test_data is provided here
 
 ## References
 This implementation is based on / inspired by:
+
 https://github.com/Janspiry/Image-Super-Resolution-via-Iterative-Refinement
 https://github.com/BaratiLab/Diffusion-based-Fluid-Super-resolution
 
