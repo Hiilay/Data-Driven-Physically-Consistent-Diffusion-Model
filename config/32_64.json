@@ -1,0 +1,111 @@
+{
+    "name": "sr_ffhq",
+    "phase": "train", // train or val
+    "gpu_ids": [
+        1
+    ],
+    "path": { //set the path
+        "log": "logs",
+        "tb_logger": "tb_logger",
+        "results": "results",
+        "checkpoint": "checkpoint",
+        "resume_state": null
+        //"/mnt/HDD2/hlz/sr3_drnn/experiments/sr_ffhq_231126_170113/checkpoint/I79000_E167"
+        //"/mnt/HDD2/hlz/Image-Super-Resolution-via-Iterative-Refinement-master/experiments/sr_ffhq_231110_144131/checkpoint/I36000_E76"
+        // "resume_state": "experiments/sr_ffhq_210806_204158/checkpoint/I640000_E37" //pretrain model or training state
+    },
+    "datasets": {
+        "train": {
+            "name": "FFHQ",
+            "mode": "LRHR", // whether need LR img
+            "datasrroot": "/mnt/HDD2/hlz/sr3_drnn/test32",
+            "datahrroot":"/mnt/HDD2/hlz/sr3_drnn/test64",
+            //"datasrroot": "/mnt/HDD2/hlz/sr3_drnn/Temperature-3D-32-32-64",
+            //"datahrroot":"/mnt/HDD2/hlz/sr3_drnn/Temperature-3D-64-64-128",
+            "l_deep":64,
+            "r_deep":128,
+            "datatype": "dat", //lmdb or img, path of img files
+            "l_resolution": 32, // low resolution need to super_resolution
+            "r_resolution": 64, // high resolution
+            "batch_size": 1,
+            "num_workers": 4,
+            "use_shuffle": false,
+            "data_len": -1 // -1 represents all data used in train
+        },
+        "val": {
+            "name": "CelebaHQ",
+            "mode": "LRHR",
+            //"datasrroot": "/mnt/HDD2/hlz/sr3_drnn/Temperature-3D-32-32-64",
+            //"datahrroot":"/mnt/HDD2/hlz/sr3_drnn/Temperature-3D-64-64-128",
+            "datasrroot": "/mnt/HDD2/hlz/sr3_drnn/test32",
+            "datahrroot":"/mnt/HDD2/hlz/sr3_drnn/test64",
+            "datatype": "dat", //lmdb or img, path of img files
+            "l_resolution": 32,
+            "r_resolution": 64,
+            "l_deep":64,
+            "r_deep":128,
+            "data_len": 50 // data length in validation 
+        }
+    },
+    "model": {
+        "which_model_G": "sr3", // use the ddpm or sr3 network structure
+        "finetune_norm": false,
+        "unet": {
+            "in_channel": 2,
+            "out_channel": 1,
+            "inner_channel": 64,
+            "channel_multiplier": [
+                1,
+                2,
+                4,
+                8,
+                8
+            ],
+            "attn_res": [
+               64
+            ],
+            "res_blocks": 3,
+            "dropout": 0.2
+        },
+        "beta_schedule": { // use munual beta_schedule for acceleration
+            "train": {
+                "schedule": "linear",//cosine
+                "n_timestep": 100,
+                "linear_start": 1e-6,
+                "linear_end": 1e-2
+
+            },
+            "val": {
+                "schedule": "linear",//cosine
+                "n_timestep": 100,
+                "linear_start": 1e-6,
+                "linear_end": 1e-2
+                
+            }
+        },
+        "diffusion": {
+            "r_deep": 128,
+            "r_resolution":64,
+            "channels": 3, //sample channel
+            "conditional": true // unconditional generation or unconditional generation(super_resolution)
+        }
+    },
+    "train": {
+        "n_iter": 1000000,
+        "val_freq": 2e3,
+        "save_checkpoint_freq": 2e3, 
+        "print_freq": 200,
+        "optimizer": {
+            "type": "adam",
+            "lr": 1e-5
+        },
+        "ema_scheduler": { // not used now
+            "step_start_ema": 5000,
+            "update_ema_every": 1,
+            "ema_decay": 0.9999
+        }
+    },
+    "wandb": {
+        "project": "sr_ffhq"
+    }
+}
