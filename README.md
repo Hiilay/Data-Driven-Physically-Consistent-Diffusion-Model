@@ -1,4 +1,4 @@
-# Data-Driven-Physically-Consistent-Diffusion-Model
+# Physically-Consistent-Diffusion-Model
 
 Three-Dimensional High-Sampling Super-Resolution Reconstruction Model for Swirling Flame Flow Fields using diffusion model
 
